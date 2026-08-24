@@ -1,0 +1,72 @@
+<Window x:Class="CustomRoulette.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="カスタムルーレット" Height="640" Width="500"
+        Background="#F4F4F9"
+        ResizeMode="CanMinimize"
+        WindowStartupLocation="CenterScreen"
+        FontFamily="Yu Gothic UI">
+
+    <Window.Resources>
+        <!-- Web版の丸角・青ボタンに寄せたスタイル(ホバー/無効状態も含む) -->
+        <Style x:Key="RoundButton" TargetType="Button">
+            <Setter Property="Background" Value="#007bff"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#0056b3"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="border" Property="Background" Value="#aaaaaa"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <StackPanel Margin="24">
+        <TextBlock Text="カスタムルーレット" FontSize="28" FontWeight="Bold"
+                   Foreground="#333333" HorizontalAlignment="Center" Margin="0,10,0,24"/>
+
+        <DockPanel Margin="0,0,0,14">
+            <Button x:Name="AddButton" Content="追加" Width="90" Height="32"
+                    DockPanel.Dock="Right" Style="{StaticResource RoundButton}"
+                    Click="AddButton_Click"/>
+            <TextBox x:Name="ValueInput" Height="30" FontSize="16"
+                     VerticalContentAlignment="Center" Padding="6,0"
+                     Margin="0,0,10,0" KeyDown="ValueInput_KeyDown"/>
+        </DockPanel>
+
+        <ListBox x:Name="ValueListBox" Height="150" FontSize="16" Margin="0,0,0,14"/>
+
+        <Button x:Name="DeleteButton" Content="削除" Width="100" Height="32"
+                HorizontalAlignment="Left" Style="{StaticResource RoundButton}"
+                Click="DeleteButton_Click" Margin="0,0,0,24"/>
+
+        <Border Height="110" Margin="0,0,0,24">
+            <TextBlock x:Name="RouletteText" Text="-" FontSize="48" FontWeight="Bold"
+                       Foreground="#ff6347" HorizontalAlignment="Center"
+                       VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+        </Border>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+            <Button x:Name="StartButton" Content="スタート" Width="110" Height="40"
+                    Margin="0,0,20,0" Style="{StaticResource RoundButton}"
+                    IsEnabled="False" Click="StartButton_Click"/>
+            <Button x:Name="StopButton" Content="ストップ" Width="110" Height="40"
+                    Style="{StaticResource RoundButton}"
+                    IsEnabled="False" Click="StopButton_Click"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

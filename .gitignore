@@ -1,3 +1,11 @@
 # Electron (desktop/)
 desktop/node_modules/
 desktop/dist/
+
+# C / Win32 (desktop-c/)
+desktop-c/*.exe
+desktop-c/*.o
+
+# C# / WPF (desktop-csharp/)
+desktop-csharp/bin/
+desktop-csharp/obj/
