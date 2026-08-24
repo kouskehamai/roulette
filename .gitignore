@@ -9,3 +9,22 @@ desktop-c/*.o
 # C# / WPF (desktop-csharp/)
 desktop-csharp/bin/
 desktop-csharp/obj/
+
+# Java (desktop-java/)
+desktop-java/build/
+desktop-java/dist/
+desktop-java/dist_installer/
+desktop-java/dist_jar/
+
+# Python (desktop-python/)
+desktop-python/build/
+desktop-python/dist/
+desktop-python/__pycache__/
+desktop-python/*.spec
+
+# Go (desktop-go/, server-go/, test-go/)
+desktop-go/*.exe
+server-go/*.exe
+test-go/*.exe
+test-go/*.log
+release-assets/

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>カスタムルーレット</title>
+
+    <!-- PWA: manifest -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ff6347">
+
+    <!-- iOS: ホーム画面追加時の見た目・挙動 -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="ルーレット">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+
+    <!-- 通常のブラウザタブ用アイコン -->
+    <link rel="icon" href="icons/icon-192.png">
+
+    <style>
+        html {
+            /* iOSのノッチ・ホームインジケータ領域に配慮 */
+            height: 100%;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+            min-height: 100%;
+            /* iOSでのタップ時のハイライトを消す */
+            -webkit-tap-highlight-color: transparent;
+        }
+        h1 {
+            margin-top: calc(50px + env(safe-area-inset-top));
+            color: #333;
+        }
+        .roulette {
+            font-size: 80px;
+            font-weight: bold;
+            color: #ff6347;
+            margin: 30px auto;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 10px;
+            word-break: break-word;
+        }
+        .input-container {
+            margin: 20px;
+        }
+        input {
+            font-size: 18px;
+            padding: 8px;
+        }
+        .list {
+            margin: 20px;
+            font-size: 18px;
+            color: #333;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        .list span {
+            display: flex;
+            align-items: center;
+            background-color: #eee;
+            padding: 5px 10px;
+            border-radius: 5px;
+            position: relative;
+            color: #333;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .list span button {
+            background: #ccc;
+            color: #333;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+        .list span button:hover {
+            background: #bbb;
+        }
+        button {
+            padding: 12px 22px;
+            font-size: 18px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            /* スマホでのタップしやすさを確保 */
+            min-height: 44px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #aaa;
+            cursor: default;
+        }
+    </style>
+</head>
+<body>
+    <h1>カスタムルーレット</h1>
+    <div class="input-container">
+        <input type="text" id="valueInput" placeholder="値を入力" enterkeyhint="done">
+        <button id="addButton">追加</button>
+    </div>
+    <div class="list" id="valueList">選択された値: なし</div>
+    <div class="roulette" id="roulette">-</div>
+    <button id="startButton" disabled>スタート</button>
+    <button id="stopButton" disabled>ストップ</button>
+
+    <script>
+        const valueInput = document.getElementById("valueInput");
+        const addButton = document.getElementById("addButton");
+        const valueList = document.getElementById("valueList");
+        const rouletteElement = document.getElementById("roulette");
+        const startButton = document.getElementById("startButton");
+        const stopButton = document.getElementById("stopButton");
+
+        const STORAGE_KEY = "roulette-values";
+
+        // ユーザーが追加した値を保持する配列（前回終了時の内容を復元）
+        let values = loadValues();
+        let interval;
+
+        updateValueList();
+
+        function loadValues() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                const parsed = raw ? JSON.parse(raw) : [];
+                return Array.isArray(parsed) ? parsed : [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function saveValues() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(values));
+            } catch (e) {
+                // ストレージが使えない環境でも動作は継続する
+            }
+        }
+
+        // 値をリストに追加する関数
+        function addValue() {
+            const value = valueInput.value.trim(); // 入力値をトリム（前後の空白を削除）
+
+            if (value === "") {
+                alert("空の値は追加できません");
+                return;
+            }
+
+            if (values.includes(value)) {
+                alert("同じ値は追加できません");
+                return;
+            }
+
+            values.push(value);
+            saveValues();
+            updateValueList();
+            valueInput.value = ""; // 入力フィールドをリセット
+            valueInput.focus();
+            startButton.disabled = values.length === 0; // スタートボタンの有効化
+        }
+
+        // 値リストを更新する関数
+        function updateValueList() {
+            valueList.innerHTML = ""; // リストを初期化
+
+            if (values.length === 0) {
+                valueList.textContent = "選択された値: なし";
+                startButton.disabled = true;
+                return;
+            }
+
+            valueList.textContent = "選択された値: ";
+            values.forEach((val, index) => {
+                const span = document.createElement("span");
+                span.textContent = val;
+
+                // 削除ボタン
+                const deleteButton = document.createElement("button");
+                deleteButton.textContent = "×";
+                deleteButton.addEventListener("click", () => removeValue(index));
+
+                span.prepend(deleteButton); // ボタンを値の前に配置
+                valueList.appendChild(span);
+            });
+        }
+
+        // 値を削除する関数
+        function removeValue(index) {
+            values.splice(index, 1); // 指定されたインデックスの値を削除
+            saveValues();
+            updateValueList(); // リストを更新
+        }
+
+        // ルーレットをスタートする関数
+        function startRoulette() {
+            startButton.disabled = true;
+            stopButton.disabled = false;
+
+            interval = setInterval(() => {
+                const randomIndex = Math.floor(Math.random() * values.length);
+                rouletteElement.textContent = values[randomIndex];
+            }, 100); // 0.1秒ごとに更新
+        }
+
+        // ルーレットをストップする関数
+        function stopRoulette() {
+            clearInterval(interval);
+            startButton.disabled = false;
+            stopButton.disabled = true;
+        }
+
+        // ボタンのイベントリスナーを設定
+        addButton.addEventListener("click", addValue);
+        startButton.addEventListener("click", startRoulette);
+        stopButton.addEventListener("click", stopRoulette);
+        valueInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") addValue();
+        });
+
+        // PWA: Service Workerを登録（オフラインでも起動できるように）
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", () => {
+                navigator.serviceWorker.register("./sw.js").catch((err) => {
+                    console.error("Service Worker registration failed:", err);
+                });
+            });
+        }
+    </script>
+</body>
+</html>
