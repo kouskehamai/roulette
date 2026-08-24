@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'">
+    <title>カスタムルーレット</title>
+    <link rel="icon" href="icons/icon-192.png">
+
+    <style>
+        html, body {
+            height: 100%;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            user-select: none; /* デスクトップアプリらしく誤選択を防ぐ */
+        }
+        h1 {
+            margin-top: 40px;
+            color: #333;
+        }
+        .roulette {
+            font-size: 80px;
+            font-weight: bold;
+            color: #ff6347;
+            margin: 30px auto;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 10px;
+            word-break: break-word;
+        }
+        .input-container {
+            margin: 20px;
+        }
+        input {
+            font-size: 18px;
+            padding: 8px;
+            user-select: text;
+        }
+        .list {
+            margin: 20px;
+            font-size: 18px;
+            color: #333;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        .list span {
+            display: flex;
+            align-items: center;
+            background-color: #eee;
+            padding: 5px 10px;
+            border-radius: 5px;
+            position: relative;
+            color: #333;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .list span button {
+            background: #ccc;
+            color: #333;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+        .list span button:hover {
+            background: #bbb;
+        }
+        button {
+            padding: 12px 22px;
+            font-size: 18px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            min-height: 44px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #aaa;
+            cursor: default;
+        }
+    </style>
+</head>
+<body>
+    <h1>カスタムルーレット</h1>
+    <div class="input-container">
+        <input type="text" id="valueInput" placeholder="値を入力">
+        <button id="addButton">追加</button>
+    </div>
+    <div class="list" id="valueList">選択された値: なし</div>
+    <div class="roulette" id="roulette">-</div>
+    <button id="startButton" disabled>スタート</button>
+    <button id="stopButton" disabled>ストップ</button>
+
+    <script src="renderer.js"></script>
+</body>
+</html>

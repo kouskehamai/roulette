@@ -1,0 +1,41 @@
+{
+  "name": "custom-roulette",
+  "productName": "カスタムルーレット",
+  "version": "1.0.0",
+  "description": "自分で追加した候補からランダムに選ぶルーレットアプリ（デスクトップ版）",
+  "main": "main.js",
+  "author": "kousukehamai",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.0.0"
+  },
+  "build": {
+    "appId": "com.kousukehamai.customroulette",
+    "productName": "カスタムルーレット",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**/*"
+    ],
+    "win": {
+      "icon": "build/icon.ico",
+      "target": [
+        { "target": "nsis", "arch": ["x64"] },
+        { "target": "portable", "arch": ["x64"] }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}
